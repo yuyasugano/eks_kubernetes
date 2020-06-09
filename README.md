@@ -1,4 +1,4 @@
-# AWS EKS test deployment with kubectl
+# AWS EKS test deployment with eksctl and kubectl
  
 ## yaml file
 
