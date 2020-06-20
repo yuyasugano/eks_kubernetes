@@ -61,7 +61,21 @@ kubectl get jobs
 kubectl apply -f cronjob_sample.yaml
 kubectl get cronjob
 ```
-8. Destroy the cluster in EKS by using `eksctl` utility
+8. Service ClusterIP, NodePort, ExternalIP, ExternalName and Headless
+```sh
+kubectl apply -f deployment.yaml
+kubectl apply -f clusterip_sample.yml
+./hostname.sh
+kubectl run --image=centos:7 --restart=Never --rm  -i testpod -- curl -s http://sample-clusterip:8080
+kubectl apply -f clusterip_multi_sample.yaml
+kubectl get node -o custom-columns="NAME:{metadata.name},IP:{status.addresses[].address}"
+kubectl apply -f externalip_sample.yaml
+kubectl apply -f nodeport_sample.yaml
+kubectl apply -f nodeport_local_sample.yaml
+kubectl apply -f headless_sample.yaml
+kubectl apply -f externalname_sample.yaml
+```
+9. Destroy the cluster in EKS by using `eksctl` utility
 ```sh
 eksctl delete cluster --name sample-cluster
 eksctl get cluster
