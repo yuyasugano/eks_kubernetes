@@ -75,7 +75,58 @@ kubectl apply -f nodeport_local_sample.yaml
 kubectl apply -f headless_sample.yaml
 kubectl apply -f externalname_sample.yaml
 ```
-9. Destroy the cluster in EKS by using `eksctl` utility
+9. Ingress and Ingress Controller
+- Ingress resource with external load-balancer via NodePort
+```sh
+cd ingress
+cat << _EOF_ | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-ingress-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      ingress-app: sample
+  template:
+    metadata:
+      labels:
+        ingress-app: sample
+    spec:
+      containers:
+        - name: nginx-container
+          image: zembutsu/docker-sample-nginx:1.0
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc1
+spec:
+  type: NodePort
+  ports:
+    - name: "http-port"
+      protocol: "TCP"
+      port: 8888
+      targetPort: 80
+  selector:
+    ingress-app: sample
+_EOF_
+  
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=sample.example.com"
+kubectl create secret tls tls-sample --key /tmp/tls.key --cert /tmp/tls.crt
+kubectl apply -f ingress_sample.yaml
+```
+- Ingress with Nginx Ingress Controller within a cluster
+```sh
+kubectl apply -f deployment_http.yaml
+kubectl apply -f service_http.yaml
+kubectl apply -f ingress_controller_sample.yaml
+kubectl apply -f service_ingress_controller.yaml 
+```
+10. Destroy the cluster in EKS by using `eksctl` utility
 ```sh
 eksctl delete cluster --name sample-cluster
 eksctl get cluster
