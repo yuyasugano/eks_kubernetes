@@ -67,6 +67,7 @@ kubectl apply -f deployment.yaml
 kubectl apply -f clusterip_sample.yml
 ./hostname.sh
 kubectl run --image=centos:7 --restart=Never --rm  -i testpod -- curl -s http://sample-clusterip:8080
+kubectl run --image=centos:6 --restart=Never --rm -i testpod -- dig sample-clusterip.default.svc.cluster.local
 kubectl apply -f clusterip_multi_sample.yaml
 kubectl get node -o custom-columns="NAME:{metadata.name},IP:{status.addresses[].address}"
 kubectl apply -f externalip_sample.yaml
@@ -128,7 +129,7 @@ kubectl apply -f service_ingress_controller.yaml
 ```
 10. Destroy the cluster in EKS by using `eksctl` utility
 ```sh
-eksctl delete cluster --name sample-cluster
+eksctl delete cluster --name sample-cluster --wait
 eksctl get cluster
 ```
  
